@@ -29,8 +29,10 @@ describe Backup::CLI::Helpers do
         let(:stdout_messages) { '' }
         let(:stderr_messages) { '' }
 
-        it 'should generate no additional log messages' do
-          helpers.run(command).should be_nil
+        it 'should return the (empty) output for internal usage' do
+          run = helpers.run(command)
+          run.should be_an_instance_of(String)
+          run.should be_empty
         end
       end
 
@@ -41,8 +43,11 @@ describe Backup::CLI::Helpers do
         it 'should log the stdout messages' do
           Backup::Logger.expects(:message).with(
             "cmd_name:STDOUT: out line1\ncmd_name:STDOUT: out line2"
-          )
-          helpers.run(command).should be_nil
+                                                )
+          run = helpers.run(command)
+          run.should be_an_instance_of(String)
+          run.should include("out line1")
+          run.should include("out line2")
         end
       end
 
@@ -54,7 +59,9 @@ describe Backup::CLI::Helpers do
           Backup::Logger.expects(:warn).with(
             "cmd_name:STDERR: err line1\ncmd_name:STDERR: err line2"
           )
-          helpers.run(command).should be_nil
+          run = helpers.run(command)
+          run.should be_an_instance_of(String)
+          run.should be_empty
         end
       end
 
@@ -69,7 +76,10 @@ describe Backup::CLI::Helpers do
           Backup::Logger.expects(:warn).with(
             "cmd_name:STDERR: err line1\ncmd_name:STDERR: err line2"
           )
-          helpers.run(command).should be_nil
+          run = helpers.run(command)
+          run.should be_an_instance_of(String)
+          run.should include("out line1")
+          run.should include("out line2")
         end
       end
     end # context 'when the command is successful'
