@@ -14,13 +14,14 @@ module Backup
       # If the command fails to execute, or returns a non-zero exit status
       # an Error will be raised.
       #
-      # Returns nil
+      # Returns output of command
       def run(command)
         name = command_name(command)
         Logger.message "Running system utility '#{ name }'..."
 
+        out, err = '', ''
         begin
-          out, err = '', ''
+
           ps = Open4.popen4(command) do |pid, stdin, stdout, stderr|
             stdin.close
             out, err = stdout.read.strip, stderr.read.strip
@@ -45,7 +46,7 @@ module Backup
             )
           end
 
-          return nil
+          return out
         else
           raise Errors::CLI::SystemCallError, <<-EOS
             '#{ name }' Failed on #{ RUBY_PLATFORM }
